@@ -1,0 +1,4 @@
+--exit
+--recursive
+./test/*.test.js
+./test/**/*.test.js

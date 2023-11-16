@@ -1,0 +1,90 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {image_name}
+  labels:
+    app: {image_name}
+spec:
+  replicas: $INSTANCE_COUNT
+  selector:
+    matchLabels:
+      app: {image_name}
+  template:
+    metadata:
+      labels:
+        app: {image_name}
+    spec:
+      containers:
+      - name: {image_name}
+        image: $IMAGE_URI
+        ports:
+        - containerPort: 4000
+        envFrom:
+        - configMapRef:
+            name: {image_name}
+        envFrom:
+        - secretRef:
+            name: {image_name}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {image_name}
+  labels:
+    app: {image_name}
+spec:
+  selector:
+    app: {image_name}
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 4000
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/websocket-services: {image_name}
+    nginx.ingress.kubernetes.io/proxy-body-size: 2M
+  name: {image_name}
+spec:
+  rules:
+  - host: $HOST_NAME
+    http:
+      paths:
+      - backend:
+          serviceName: {image_name}
+          servicePort: 80
+        path: {path_name}
+      - backend:
+          serviceName: {image_name}
+          servicePort: 80
+        path: {graphql_path}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {image_name}
+  labels:
+    app: {image_name}
+type: Opaque
+stringData:
+  AWS_DEFAULT_REGION: "$AWS_DEFAULT_REGION"
+  AWS_ACCESS_KEY: "$AWS_ACCESS_KEY"
+  AWS_SECRET_ACCESS_KEY: "$AWS_SECRET_ACCESS_KEY"
+  S3_BUCKET: "$S3_BUCKET"
+  DB_HOST: "$DB_HOST"
+  DB_PORT: "$DB_PORT"
+  DB_DATABASE: "$DB_DATABASE"
+  DB_SCHEMA: "$DB_SCHEMA"
+  REDIS_HOST: "$REDIS_HOST"
+  REDIS_CACHE_PORT: "$REDIS_CACHE_PORT"
+  ELASTICSEARCH_URL: "$ELASTICSEARCH_URL"
+  ENGINE_SCHEMA_TAG: "$ENGINE_SCHEMA_TAG"
+  DB_USERNAME: "$DB_USERNAME"
+  DB_PASSWORD: "$DB_PASSWORD"
+  REDIS_PASSWORD: "$REDIS_PASSWORD"
+  JWT_SECRET: "$JWT_SECRET"
+  GOOGLE_API_KEY: "$GOOGLE_API_KEY"
+  ENGINE_API_KEY: "$ENGINE_API_KEY"
+  REDIS_TLS_ENABLED: "$REDIS_TLS_ENABLED"

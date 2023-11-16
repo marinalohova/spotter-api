@@ -1,0 +1,13 @@
+.DS_Store
+.env
+bitbucket-pipelines.yml
+coverage/
+docs/
+logs/
+node_modules**
+npm-debug.log
+migrations
+seeders
+src/plugins
+src/elastic.js
+src/models/config.js
