@@ -11,8 +11,6 @@ class Act extends DataSource {
    * @return {Promise<Object>}
   */
   async listActs(input) {
-    const { filter = [], page = 0, pageSize = 25, sort } = input;
-
     const result = await this.db.acts.findAndCountAll({ include: this.db.beats });
 
     return result;

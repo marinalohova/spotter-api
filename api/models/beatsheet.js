@@ -1,5 +1,5 @@
 export default (sequelize, DataTypes) => {
-    const BeatSheet = sequelize.define('beatsheets', {
+    const Beatsheet = sequelize.define('beatsheets', {
         id: {
             type: DataTypes.BIGINT,
             allowNull: false,
@@ -12,9 +12,9 @@ export default (sequelize, DataTypes) => {
         },
     }, { timestamps: false });
 
-    BeatSheet.associate = (models) => {
-        BeatSheet.hasMany(models.acts, { onDelete: 'CASCADE', });
+    Beatsheet.associate = (models) => {
+        Beatsheet.Acts = Beatsheet.hasMany(models.acts, { onDelete: 'CASCADE', });
     }
 
-    return BeatSheet;
+    return Beatsheet;
 };

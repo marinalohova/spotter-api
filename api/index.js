@@ -20,6 +20,7 @@ const startApolloServer = async(app, httpServer) => {
         typeDefs,
         resolvers,
         dataSources,
+        introspection: true,
         context: async ({ event, context }) => {
             return ({
                 event,
@@ -27,7 +28,8 @@ const startApolloServer = async(app, httpServer) => {
                 context,
             });
         },
-        plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+        plugins: [
+            ApolloServerPluginDrainHttpServer({ httpServer })],
     });
 
     await server.start();

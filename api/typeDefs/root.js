@@ -2,13 +2,17 @@ import { gql } from 'apollo-server';
 
 const root = gql`
   enum CameraAngle {
-    PAN
-    TILT
-    ZOOM
+    Pan
+    Tilt
+    Zoom
     POV
     CU
     LS
     MS
+  }
+  
+  input FilterInput {
+    search: String
   }
   
   type Query {

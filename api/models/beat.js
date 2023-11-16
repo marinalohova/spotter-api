@@ -6,6 +6,10 @@ export default (sequelize, DataTypes) => {
             autoIncrement: true,
             primaryKey: true,
         },
+        actId: {
+            type: DataTypes.BIGINT,
+            allowNull: false,
+        },
         title: {
             allowNull: false,
             type: DataTypes.STRING,

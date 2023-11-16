@@ -1,5 +1,6 @@
-import app from "./src/index.js";
-import consola from "consola";
+import app from "./api/index.js";
 import dotenv from "dotenv";
+
 dotenv.config();
-app.listen(3000, () => consola.info("Server started"));
+
+app.listen(3000, () => console.log("Server started"));

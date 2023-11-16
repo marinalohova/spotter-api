@@ -6,6 +6,10 @@ export default (sequelize, DataTypes) => {
             autoIncrement: true,
             primaryKey: true,
         },
+        beatsheetId: {
+            type: DataTypes.BIGINT,
+            allowNull: false,
+        },
         description: {
             allowNull: false,
             type: DataTypes.TEXT,

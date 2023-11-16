@@ -22,11 +22,7 @@ const act = gql`
   input GetActInput {
     id: ID!
   }
-  
-  input FilterInput {
-    search: String
-  }
-  
+    
   extend type Query {
     getAct(input: GetActInput!): Act! 
     listActs(filter: FilterInput): Acts!
