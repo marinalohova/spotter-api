@@ -20,12 +20,13 @@ export default (sequelize, DataTypes) => {
         },
         duration: {
             allowNull: false,
-            type: DataTypes.INTEGER,
+            type: DataTypes.STRING,
         },
         cameraAngle: {
-            allowNull: false,
+            allowNull: true,
             type: DataTypes.ENUM('Pan', 'Tilt', 'Zoom', 'POV', 'CU', 'LS', 'MS'),
         },
+        deletedAt: DataTypes.DATE,
     });
 
     return Beat;

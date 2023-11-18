@@ -22,7 +22,8 @@ export default {
   },
   Mutation: {
     updateBeatsheet: async (root, { input }, { dataSources }) => {
-      return dataSources.Beatsheet.updateBeatsheet(input);
+      await dataSources.Beatsheet.updateBeatsheet(input);
+      return dataSources.Beatsheet.getBeatsheet(input);
     },
   }
 };

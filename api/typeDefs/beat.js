@@ -5,7 +5,7 @@ const beat = gql`
     id: ID
     title: String
     description: String
-    duration: Int
+    duration: String
     cameraAngle: CameraAngle
   }
 
@@ -19,8 +19,8 @@ const beat = gql`
   input CreateBeatInput {
     title: String!
     description: String!
-    duration: Int!
-    cameraAngle: CameraAngle!
+    duration: String!
+    cameraAngle: CameraAngle
   }
   
   input UpdateBeatInput {

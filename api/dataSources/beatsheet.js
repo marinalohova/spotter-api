@@ -11,8 +11,11 @@ class Beatsheet extends DataSource {
    * @return {Promise<Object>}
   */
   async listBeatsheets(input) {
-    const result = await this.db.beatsheets.findAndCountAll(
-        { include: [{ model:this.db.acts,include: [this.db.beats] }] });
+    const result = await this.db.beatsheets.findAndCountAll({
+      include: [{ model: this.db.acts, include: [this.db.beats] }],
+      order: [
+            [ this.db.acts, 'id', 'ASC' ],
+            [ this.db.acts, this.db.beats, 'id', 'ASC' ]] });
 
     return result;
   }
@@ -28,8 +31,8 @@ class Beatsheet extends DataSource {
       include: [{ model: this.db.acts,
         include:[this.db.beats] }],
       order: [
-        [ this.db.acts, 'id', 'DESC' ],
-        [ this.db.acts, this.db.beats, 'id', 'DESC' ]]
+        [ this.db.acts, 'id', 'ASC' ],
+        [ this.db.acts, this.db.beats, 'id', 'ASC' ]]
     });
   }
 
@@ -38,28 +41,44 @@ class Beatsheet extends DataSource {
    * @param {Object} input: { }
    * @return {Promise<Object>}
    */
-  async updateBeatsheet({ acts, ...rest}) {
+  async updateBeatsheet({acts, id }) {
 
-    const beatsheet = await this.getBeatsheet(rest);
-
-    const updatedActs = acts.map((act, index) => {
-      const existing = beatsheet.acts[index];
-      if (existing) {
-        const updatedBeats = act.beats && act.beats.length > 0 && act.beats.map((beat, index) => {
-          if (existing.beats[index]) {
-            return { id: existing.beats[index].id, ...beat, actId: existing.id };
-          }
-          return { ...beat,  actId: existing.id };
-        })
-        return { id: existing.id, ...act, beatsheetId: beatsheet.id, beats: updatedBeats };
-      }
-      return { ...act, beatsheetId: beatsheet.id };
-    })
-    await this.db.acts.bulkCreate(updatedActs,  {
-      updateOnDuplicate: ['description'],
-      include: [{ association: this.db.acts.Beats, updateOnDuplicate: ['title', 'description', 'duration', 'cameraAngle'] }],
+    const beatsheet = await this.db.beatsheets.findOne({
+      where: { id },
+      paranoid: false,
+      include: [{ model: this.db.acts,
+        paranoid: false,
+        include:[{ model: this.db.beats, paranoid: false }] }],
+      order: [
+        [ this.db.acts, 'id', 'ASC' ],
+        [ this.db.acts, this.db.beats, 'id', 'ASC' ]]
     });
-    return beatsheet.reload();
+
+    const existingActs = (beatsheet.acts || []).map(({ dataValues: act }) => { return { ...act, deletedAt: new Date() }; });
+    const updatedActs = acts.reduce((memo, act, index) => {
+      const existingAct = existingActs[index];
+      if (existingAct) {
+        const existingBeats = (existingAct.beats || []).map(({ dataValues: beat }) => { return { ...beat, deletedAt: new Date() }; });
+        const updatedBeats = (act.beats || []).reduce((memo, beat, index) => {
+          const existingBeat = existingBeats[index];
+          if (existingBeat) {
+            const { deletedAt, ...item } = { ...existingBeat, ...beat }
+            memo.splice(index, 1, item);
+            return memo;
+          }
+          return [...memo, { ...beat, actId: existingAct.id, }];
+        }, existingBeats);
+        const { deletedAt, ...item } = { ...existingAct, ...act, beats: updatedBeats };
+        memo.splice(index, 1, item);
+        return memo;
+      }
+      return [...memo, { ...act, beatsheetId: beatsheet.id }];
+    }, existingActs);
+    await this.db.acts.bulkCreate(updatedActs,  {
+      updateOnDuplicate: ['description', 'deletedAt'],
+      include: [{ association: this.db.acts.Beats, updateOnDuplicate: ['title',
+          'description', 'duration', 'cameraAngle', 'deletedAt'] }],
+    });
   }
 }
 

@@ -1,4 +1,4 @@
-import 'dotenv/config';
+import "dotenv/config.js";
 import pg from 'pg';
 
 export default {
@@ -9,6 +9,11 @@ export default {
     password: process.env.POSTGRES_PASSWORD,
     dialect: 'postgres',
     dialectModule: pg,
+    dialectOptions: {
+      ssl: {
+        require: true
+      }
+    },
     seederStorage: 'sequelize',
     pool: {
       max: 5,

@@ -14,10 +14,11 @@ export default (sequelize, DataTypes) => {
             allowNull: false,
             type: DataTypes.TEXT,
         },
+        deletedAt: DataTypes.DATE,
     });
 
     Act.associate = (models) => {
-        Act.Beats = Act.hasMany(models.beats, { onDelete: 'CASCADE', });
+        Act.Beats = Act.hasMany(models.beats, { onDelete: 'CASCADE' });
     }
 
     return Act;
